@@ -23,5 +23,7 @@ else
 fi
 done
 
+echo "All Done!"
+
 exit 0
 
