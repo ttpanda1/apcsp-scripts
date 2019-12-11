@@ -1,0 +1,27 @@
+#!/bin/bash
+
+PIS="rpi01 rpi02 rpi03 rpi04 rpi05 rpi06 rpi07 rpi08 rpi09 rpi10 rpi11 rpi12 rpi13 rpi14 rpi15 rpi16 rpi17 rpi18 rpi19 rpi20"
+TempPIS=$PIS
+
+if [ $# -gt 0 ]
+then
+	TempPIS=$@
+fi
+
+for pi in $TempPIS ; do
+if [[ $PIS == *"$pi"* ]]
+then
+	ping -c 1 -W 1 $pi > /dev/null 2>&1
+	if [ $? -eq 0  ]
+		then
+			echo "$pi : alive"
+		else
+			echo "$pi : dead"
+	fi
+else
+	echo "$pi : dead"
+fi
+done
+
+exit 0
+
