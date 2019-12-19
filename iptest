@@ -1,0 +1,46 @@
+#!/bin/bash
+IP="`hostname -I`"
+NUM="1"
+IPS=""
+NIP=`echo "$IP" | awk -F'.' '{print $1,$2,$3}' OFS='.'`
+
+while [ $NUM -lt 256 ] ; do
+    tmp="$NIP"
+    tmp+=".$NUM"
+    IPS="${IPS} ${tmp}"
+
+    ping -c 1 $tmp > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+	echo "IP Address: $tmp"
+	hostn=`host "$tmp" | cut -d' ' -f5`
+	if [ $hostn != "3(NXDOMAIN)" ]
+	then
+		echo "hostname: $hostn"
+	else
+		echo "hostname: NA"
+	fi
+	nc -zv -w 1 $tmp 80 > /dev/null 2>&1
+	if [ $? -eq 0 ]
+	then
+		echo "http: UP"
+	else
+		echo "http: DOWN"
+	fi
+	nc -zv -w 1 $tmp 22 > /dev/null 2>&1
+	if [ $? -eq 0 ]
+	then
+		echo "ssh: UP"
+	else
+		echo "ssh: DOWN"
+	fi
+	echo "mac address: `arp -a $tmp| awk '{print $4}'`"
+    else
+	printf "$tmp: Not Alive\n"
+    fi
+
+    let NUM=$NUM+1
+done
+
+exit 0
+
